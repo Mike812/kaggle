@@ -1,9 +1,6 @@
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error
-from xgboost import XGBClassifier
+from sklearn.preprocessing import OneHotEncoder
 
 
 class Preprocessing:
@@ -47,23 +44,3 @@ class Preprocessing:
             y_train = self.df["Transported"]
             x_train = self.df.drop(["Transported", "Name", "Cabin", "PassengerId"], axis=1)
             return x_train, y_train
-
-
-train_val_data = pd.read_csv("data/train.csv")
-test_data = pd.read_csv("data/test.csv")
-
-train_data, val_data = train_test_split(train_val_data, test_size=0.2, random_state=42)
-
-x_train, y_train = Preprocessing(df=train_data, test=False).start()
-x_val, y_val = Preprocessing(df=val_data, test=False).start()
-x_test = Preprocessing(df=test_data, test=True).start()
-
-my_model = XGBClassifier(n_estimators=500, learning_rate=0.1)
-my_model.fit(x_train, y_train, early_stopping_rounds=5, eval_set=[(x_val, y_val)])
-
-predictions = my_model.predict(x_val)
-mean_absolute_error = mean_absolute_error(predictions, y_val)
-print("Mean Absolute Error: " + str(mean_absolute_error))
-
-y_test = my_model.predict(x_test)
-print(y_test)
