@@ -21,7 +21,8 @@ class Preprocessing:
         # Inbalanced columns that will be normalized
         self.normalization_columns = [col for col in self.imputation_cols if (self.df[col].skew() > 1)]
         # irrelevant columns for modeling
-        self.columns_to_drop = ["Name", "Cabin", "PassengerId", "VIP"]
+        self.columns_to_drop_train = ["Name", "Cabin", "PassengerId", "VIP", "Transported"]
+        self.columns_to_drop_test = ["Name", "Cabin", "PassengerId", "VIP"]
 
     # Function to apply one hot encoding to specific columns of a dataframe
     def apply_one_hot_encoding(self):
@@ -44,6 +45,7 @@ class Preprocessing:
 
     # Apply log transformation to inbalanced columns
     def normalize_inbalanced_columns(self):
+        np.seterr(divide='ignore')
         for col in self.normalization_columns:
             self.df[col] = np.where(self.df[col] > 0, np.log(self.df[col]), 0)
         return self.df
@@ -54,11 +56,9 @@ class Preprocessing:
         self.df = self.apply_one_hot_encoding()
         self.df = self.normalize_inbalanced_columns()
         if self.test:
-            x_train = self.df.drop(self.columns_to_drop, axis=1)
+            x_train = self.df.drop(self.columns_to_drop_test, axis=1)
             return x_train
         else:
             y_train = self.df["Transported"]
-            columns_to_drop = self.columns_to_drop
-            columns_to_drop.append("Transported")
-            x_train = self.df.drop(columns_to_drop, axis=1)
+            x_train = self.df.drop(self.columns_to_drop_train, axis=1)
             return x_train, y_train

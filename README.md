@@ -5,3 +5,4 @@ Personal Kaggle competitions and exercises
   - see https://www.kaggle.com/datasets/sayansh001/alternate-dimension-transport
   - see https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap
   - see https://www.kaggle.com/learn/intermediate-machine-learning
+- Master thesis
