@@ -1,19 +1,28 @@
 import pandas as pd
+import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 
 
 # Represents all methods and variables that are needed for the preprocessing of the input dataframes.
-# Defines one hot encoded and imputation columns.
+# Defines one hot encoded, imputation and normalization columns.
+# Inspired by https://www.kaggle.com/learn/intermediate-machine-learning and
+# https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap learning content.
 class Preprocessing:
     def __init__(self, df, test):
+        # train, test or validation dataframe
         self.df = df
+        # flag for test data set
         self.test = test
-
-    # Categorical columns that can be one hot encoded (less than 10 distinct values)
-    one_hot_cols = ['HomePlanet', 'CryoSleep', 'Destination']
-    # Numerical columns that will be imputed due to missing values
-    imputation_cols = ["Age", "RoomService", "VIP", "FoodCourt", "ShoppingMall", "Spa", "VRDeck"]
+        # Categorical columns that can be one hot encoded (less than 10 distinct values)
+        self.one_hot_cols = ['HomePlanet', 'CryoSleep', 'Destination']
+        # Columns that will be imputed due to missing values
+        self.imputation_cols = ["Age", "RoomService", "CryoSleep", "FoodCourt", "ShoppingMall", "Spa", "VRDeck"]
+        # Inbalanced columns that will be normalized
+        self.normalization_columns = [col for col in self.imputation_cols if (self.df[col].skew() > 1)]
+        # irrelevant columns for modeling
+        self.columns_to_drop_train = ["Name", "Cabin", "PassengerId", "VIP", "Transported"]
+        self.columns_to_drop_test = ["Name", "Cabin", "PassengerId", "VIP"]
 
     # Function to apply one hot encoding to specific columns of a dataframe
     def apply_one_hot_encoding(self):
@@ -34,14 +43,22 @@ class Preprocessing:
         self.df = pd.concat([self.df, imputed_data], axis=1)
         return self.df
 
+    # Apply log transformation to inbalanced columns
+    def normalize_inbalanced_columns(self):
+        np.seterr(divide='ignore')
+        for col in self.normalization_columns:
+            self.df[col] = np.where(self.df[col] > 0, np.log(self.df[col]), 0)
+        return self.df
+
     # Starts preprocessing
     def start(self):
-        self.df = self.apply_one_hot_encoding()
         self.df = self.apply_imputation()
+        self.df = self.apply_one_hot_encoding()
+        self.df = self.normalize_inbalanced_columns()
         if self.test:
-            x_train = self.df.drop(["Name", "Cabin", "PassengerId"], axis=1)
+            x_train = self.df.drop(self.columns_to_drop_test, axis=1)
             return x_train
         else:
             y_train = self.df["Transported"]
-            x_train = self.df.drop(["Transported", "Name", "Cabin", "PassengerId"], axis=1)
+            x_train = self.df.drop(self.columns_to_drop_train, axis=1)
             return x_train, y_train
