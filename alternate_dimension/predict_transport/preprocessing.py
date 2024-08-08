@@ -19,8 +19,8 @@ class Preprocessing:
         self.one_hot_cols = ['HomePlanet', 'Destination']
         # Columns that will be imputed due to missing values
         self.imputation_cols = ["Age", "RoomService", "CryoSleep", "FoodCourt", "ShoppingMall", "Spa", "VRDeck"]
-        # Inbalanced columns that will be normalized
-        self.normalization_columns = [col for col in self.imputation_cols if (self.df[col].skew() > 1)]
+        # Inbalanced columns that will be normalized, [col for col in self.imputation_cols if (self.df[col].skew() > 1)]
+        self.normalization_columns = ["RoomService", "FoodCourt", "ShoppingMall", "Spa", "VRDeck"]
         # irrelevant columns for modeling
         self.columns_to_drop_train = ["Name", "Cabin", "PassengerId", "VIP", self.target_col]
         self.columns_to_drop_test = ["Name", "Cabin", "PassengerId", "VIP"]
@@ -44,12 +44,12 @@ class Preprocessing:
         self.df = pd.concat([self.df, imputed_data], axis=1)
         return self.df
 
-    # Apply log transformation to inbalanced columns
+    # Apply log2 transformation to inbalanced columns
     def apply_log_normalization(self):
         for col in self.normalization_columns:
             # add 0.1 to values to avoid - inf values in log function; np.seterr(divide='ignore') not needed
             self.df[col] += 0.1
-            self.df[col] = np.where(self.df[col] > 0, np.log(self.df[col]), 0)
+            self.df[col] = np.where(self.df[col] > 0, np.log2(self.df[col]), 0)
         return self.df
 
     # Starts preprocessing

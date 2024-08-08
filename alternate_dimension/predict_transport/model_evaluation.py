@@ -5,6 +5,7 @@ from xgboost import XGBClassifier
 from predict_transport.preprocessing import Preprocessing
 
 
+# Represents result object of cross validation
 class CrossValidationResult:
     def __init__(self, mse_results, xgb_models, acc_results, reports):
         self.mse_results = mse_results
@@ -13,6 +14,7 @@ class CrossValidationResult:
         self.reports = reports
 
 
+# Consists of all methods and variables that are needed for model evaluation
 class ModelEvaluation:
     def __init__(self, train_val_data):
         self.train_val_data = train_val_data
