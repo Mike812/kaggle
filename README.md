@@ -5,6 +5,3 @@ Personal Kaggle projects and master thesis in the field of Machine Learning
   - see https://www.kaggle.com/datasets/sayansh001/alternate-dimension-transport
   - see https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap
   - see https://www.kaggle.com/learn/intermediate-machine-learning
-- Master thesis (german)
-  - Programming of a machine learning pipeline with ANNs to improve the performance of the car diagnostics system. 
-  - Multi Label Classification 
