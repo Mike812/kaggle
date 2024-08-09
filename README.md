@@ -5,3 +5,5 @@ Personal Kaggle projects and master thesis in the field of Machine Learning
   - see https://www.kaggle.com/datasets/sayansh001/alternate-dimension-transport
   - see https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap
   - see https://www.kaggle.com/learn/intermediate-machine-learning
+- Sentiment analysis for mental health: Train a multi class classification model that predicts the mental health status of a person based on textual information
+  - https://www.kaggle.com/datasets/suchintikasarkar/sentiment-analysis-for-mental-health

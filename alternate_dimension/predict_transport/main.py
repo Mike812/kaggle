@@ -1,7 +1,7 @@
 import pandas as pd
 
-from predict_transport.model_evaluation import ModelEvaluation
-from predict_transport.preprocessing import Preprocessing
+from alternate_dimension.predict_transport.model_evaluation import ModelEvaluation
+from alternate_dimension.predict_transport.preprocessing import Preprocessing
 
 # Read data from kaggle as dataframes
 train_val_data = pd.read_csv("../data/train.csv")

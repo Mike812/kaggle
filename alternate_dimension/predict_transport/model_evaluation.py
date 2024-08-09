@@ -2,7 +2,7 @@ from sklearn.metrics import mean_squared_error, accuracy_score, classification_r
 from sklearn.model_selection import KFold
 from xgboost import XGBClassifier
 
-from predict_transport.preprocessing import Preprocessing
+from alternate_dimension.predict_transport.preprocessing import Preprocessing
 
 
 # Represents result object of cross validation

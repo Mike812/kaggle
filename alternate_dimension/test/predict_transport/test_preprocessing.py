@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import pytest
 
-from predict_transport.preprocessing import Preprocessing
+from alternate_dimension.predict_transport.preprocessing import Preprocessing
 
 df_small = pd.DataFrame({"PassengerId": [1, 2, 3], "HomePlanet": ["Earth", "Mars", "Saturn"], "CryoSleep": [1, 0, 1],
                          "Cabin": ["A", "B", "C"], "Destination": ["Galaxis1", "Galaxis2", "Galaxis1"],
@@ -11,7 +11,7 @@ df_small = pd.DataFrame({"PassengerId": [1, 2, 3], "HomePlanet": ["Earth", "Mars
                          "FoodCourt": [21, None, 90], "ShoppingMall": [None, 12, 21], "Spa": [12, 21, 12],
                          "VRDeck": [100, 0, 0], "Name": ["A", "B", "C"], "Transported": [1, 0, 1]})
 
-df_test = pd.read_csv("../../data/test.csv")
+df_test = pd.read_csv("../data/test.csv")
 
 
 # Test all preprocessing methods
