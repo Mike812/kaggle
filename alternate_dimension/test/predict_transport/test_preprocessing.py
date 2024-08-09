@@ -68,7 +68,7 @@ class TestPreprocessing:
         no_one_hot_cols = df2["HomePlanet"].unique().size + df2["Destination"].unique().size
         one_hot_cols = list(range(no_one_hot_cols))
         feature_columns = (["Age", "RoomService", "CryoSleep", "FoodCourt", "ShoppingMall", "Spa", "VRDeck"]
-                           + (one_hot_cols))
+                           + one_hot_cols)
 
         assert df2.isnull().values.any()
         preprocessing = Preprocessing(df=df2, test=True)
