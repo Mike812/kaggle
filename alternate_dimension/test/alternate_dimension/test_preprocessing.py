@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import pytest
 
-from alternate_dimension.alternate_dimension.preprocessing import Preprocessing
+from alternate_dimension.alternate_dimension.alternate_dim_preprocessing import AlternateDimPreprocessing
 
 df_small = pd.DataFrame({"PassengerId": [1, 2, 3], "HomePlanet": ["Earth", "Mars", "Saturn"], "CryoSleep": [1, 0, 1],
                          "Cabin": ["A", "B", "C"], "Destination": ["Galaxis1", "Galaxis2", "Galaxis1"],
@@ -20,19 +20,19 @@ class TestPreprocessing:
     def test_apply_imputation(self):
         df1 = df_small.copy()
         assert df1.isnull().values.any()
-        preprocessing = Preprocessing(df=df1, test=False)
+        preprocessing = AlternateDimPreprocessing(df=df1, test=False)
         df1 = preprocessing.apply_imputation()
         assert not df1.isnull().values.any()
 
         df2 = df_test.copy()
         assert df2.isnull().values.any()
-        preprocessing = Preprocessing(df=df2, test=True)
+        preprocessing = AlternateDimPreprocessing(df=df2, test=True)
         df2 = preprocessing.apply_imputation()
         assert not df2[preprocessing.imputation_cols].isnull().values.any()
 
     def test_apply_one_hot_encoding(self):
         df1 = df_small.copy()
-        preprocessing = Preprocessing(df=df1, test=False)
+        preprocessing = AlternateDimPreprocessing(df=df1, test=False)
         assert len(df1["HomePlanet"].unique()) == 3
         assert len(df1["Destination"].unique()) == 2
         assert df1.shape[1] == 14
@@ -46,7 +46,7 @@ class TestPreprocessing:
 
     def test_apply_log_normalization(self):
         df1 = df_small.copy()
-        preprocessing = Preprocessing(df=df1, test=False)
+        preprocessing = AlternateDimPreprocessing(df=df1, test=False)
         df1 = preprocessing.apply_log_normalization()
         assert not df1["RoomService"][0] == -math.inf
         assert df1["RoomService"][1] == 2.0
@@ -56,7 +56,7 @@ class TestPreprocessing:
         # there are 5 one hot encoded columns
         feature_columns = ["Age", "RoomService", "CryoSleep", "FoodCourt", "ShoppingMall", "Spa", "VRDeck", 0, 1, 2, 3, 4]
         df1 = df_small.copy()
-        preprocessing = Preprocessing(df=df1, test=False)
+        preprocessing = AlternateDimPreprocessing(df=df1, test=False)
         x, y = preprocessing.start()
         assert x.columns.tolist() == feature_columns
         assert not x.isnull().values.any()
@@ -71,7 +71,7 @@ class TestPreprocessing:
                            + one_hot_cols)
 
         assert df2.isnull().values.any()
-        preprocessing = Preprocessing(df=df2, test=True)
+        preprocessing = AlternateDimPreprocessing(df=df2, test=True)
         x = preprocessing.start()
         assert x.columns.tolist() == feature_columns
         assert not x.isnull().values.any()

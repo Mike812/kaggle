@@ -1,18 +1,22 @@
 import pandas as pd
+from xgboost import XGBClassifier
 
-from alternate_dimension.alternate_dimension.model_evaluation import ModelEvaluation
-from alternate_dimension.alternate_dimension.preprocessing import Preprocessing
+from alternate_dimension.alternate_dimension.alternate_dim_preprocessing import AlternateDimPreprocessing
+from utils.model_evaluation import ModelEvaluation
 
 # Read data from kaggle as dataframes
 train_val_data = pd.read_csv("../data/train.csv")
 test_data = pd.read_csv("../data/test.csv")
 
-cross_validation_result = ModelEvaluation(train_val_data=train_val_data).cross_validate()
+model = XGBClassifier(n_estimators=500, learning_rate=0.1, early_stopping_rounds=5)
+cross_validation_result = ModelEvaluation(train_val_data=train_val_data,
+                                          preprocesser=AlternateDimPreprocessing,
+                                          model=model).cross_validate()
 
 print("\nFinal model:")
 passenger_ids = test_data["PassengerId"]
 # Start preprocessing of test data
-x_test = Preprocessing(df=test_data, test=True).start()
+x_test = AlternateDimPreprocessing(df=test_data, test=True).start()
 # Pick best model from cross validation
 mse_results = cross_validation_result.mse_results
 best_model_index = mse_results.index(min(mse_results))
