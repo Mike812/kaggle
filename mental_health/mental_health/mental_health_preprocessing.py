@@ -7,7 +7,7 @@ class MentalHealthPreprocessing:
     """
 
     """
-    def __init__(self, df):
+    def __init__(self, df, train_val_columns=None):
         """
 
         :param df:
@@ -17,11 +17,12 @@ class MentalHealthPreprocessing:
         # column that will be predicted
         self.target_col = "status"
         # irrelevant columns for modeling
-        self.columns_to_drop_train = [self.target_col, "statement"]
+        self.columns_to_drop = [self.target_col, "statement"]
         # number of times word have to appear in statements
         self.col_sum_threshold = 100
         # have to contain characters
         self.filter_regex = '[A-Za-z]'
+        self.train_val_columns = train_val_columns
 
     def create_bag_of_words(self):
         """
@@ -56,8 +57,23 @@ class MentalHealthPreprocessing:
         bag_of_words = self.create_bag_of_words()
         bag_of_words = self.filter_bag_of_words(bag_of_words=bag_of_words)
         preprocessed_df = pd.concat([self.df, bag_of_words], axis=1)
-        y_train = preprocessed_df[self.target_col]
+        y = preprocessed_df[self.target_col]
         label_encoder = LabelEncoder()
-        y_train = label_encoder.fit_transform(y_train)
-        x_train = preprocessed_df.drop(self.columns_to_drop_train, axis=1)
-        return x_train, y_train
+        y = label_encoder.fit_transform(y)
+        x = preprocessed_df.drop(self.columns_to_drop, axis=1)
+        # Todo: debug and check NaN values
+        if self.train_val_columns:
+            test_columns_set = set(x.columns.tolist())
+            train_val_columns_set = set(self.train_val_columns)
+            missing_train_val_columns = list(train_val_columns_set - test_columns_set)
+            missing_test_columns = list(test_columns_set - train_val_columns_set)
+
+            if missing_train_val_columns:
+                for col in missing_train_val_columns:
+                    x[col] = 0
+            if missing_test_columns:
+                x = x.drop(missing_test_columns, axis=1)
+
+        x = x.reindex(sorted(x.columns), axis=1)
+        x = x.fillna(0)
+        return x, y
