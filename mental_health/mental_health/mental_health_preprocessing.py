@@ -2,27 +2,27 @@ from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
+from utils.preprocessing import Preprocessing
 
-class MentalHealthPreprocessing:
-    """
 
+class MentalHealthPreprocessing(Preprocessing):
     """
-    def __init__(self, df, train_val_columns=None):
+    Represents all methods and variables that are needed for the preprocessing of the mental health input dataframes.
+    """
+    def __init__(self, df, target_col, col_sum_threshold, train_val_columns=None):
         """
 
         :param df:
+        :param train_val_columns:
         """
-        # train, test or validation dataframe
-        self.df = df
-        # column that will be predicted
-        self.target_col = "status"
-        # irrelevant columns for modeling
-        self.columns_to_drop = [self.target_col, "statement"]
+        super().__init__(df=df, target_col=target_col)
+        self.train_val_columns = train_val_columns
         # number of times word have to appear in statements
-        self.col_sum_threshold = 100
+        self.col_sum_threshold = col_sum_threshold
         # have to contain characters
         self.filter_regex = '[A-Za-z]'
-        self.train_val_columns = train_val_columns
+        # irrelevant columns for modeling
+        self.columns_to_drop = [self.target_col, "statement"]
 
     def create_bag_of_words(self):
         """
@@ -58,22 +58,25 @@ class MentalHealthPreprocessing:
         bag_of_words = self.filter_bag_of_words(bag_of_words=bag_of_words)
         preprocessed_df = pd.concat([self.df, bag_of_words], axis=1)
         y = preprocessed_df[self.target_col]
+        # encode mental health status
         label_encoder = LabelEncoder()
         y = label_encoder.fit_transform(y)
         x = preprocessed_df.drop(self.columns_to_drop, axis=1)
-        # Todo: debug and check NaN values
+        # prepare bag of words matrix for test set
         if self.train_val_columns:
             test_columns_set = set(x.columns.tolist())
             train_val_columns_set = set(self.train_val_columns)
             missing_train_val_columns = list(train_val_columns_set - test_columns_set)
             missing_test_columns = list(test_columns_set - train_val_columns_set)
-
             if missing_train_val_columns:
-                for col in missing_train_val_columns:
-                    x[col] = 0
+                # create missing columns
+                df_missing_cols = pd.DataFrame(columns=missing_train_val_columns)
+                x = pd.concat([x, df_missing_cols], axis=1)
             if missing_test_columns:
+                # drop columns that were not present in the train bag of words matrix
                 x = x.drop(missing_test_columns, axis=1)
 
         x = x.reindex(sorted(x.columns), axis=1)
+        # set default value for missing columns and Nan values
         x = x.fillna(0)
         return x, y

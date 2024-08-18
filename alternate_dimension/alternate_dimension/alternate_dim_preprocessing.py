@@ -6,8 +6,8 @@ from sklearn.preprocessing import OneHotEncoder
 
 class AlternateDimPreprocessing:
     """
-    Represents all methods and variables that are needed for the preprocessing of the input dataframes.
-    Inspired by https://www.kaggle.com/learn/intermediate-machine-learning and
+    Represents all methods and variables that are needed for the preprocessing of the alternate dimension
+    input dataframes. Inspired by https://www.kaggle.com/learn/intermediate-machine-learning and
     https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap learning content.
     """
     def __init__(self, df, test=False):
