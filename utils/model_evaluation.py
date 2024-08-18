@@ -8,15 +8,17 @@ class ModelEvaluation:
     """
     Consists of all methods and variables that are needed for model evaluation
     """
-    def __init__(self, train_val_data, preprocessor, model):
+    def __init__(self, train_val_data, preprocessor, target_col, model):
         """
 
         :param train_val_data:
         :param preprocessor:
+        :param target_col:
         :param model:
         """
         self.train_val_data = train_val_data
         self.preprocessor = preprocessor
+        self.target_col = target_col
         self.model = model
 
     def cross_validate(self):
@@ -39,8 +41,8 @@ class ModelEvaluation:
             print(f'Train data: {train_data.shape}')
             print(f'Validation data: {train_data.shape}')
             # Start preprocessing of data needed for modeling
-            x_train, y_train = self.preprocessor(df=train_data).start()
-            x_val, y_val = self.preprocessor(df=val_data).start()
+            x_train, y_train = self.preprocessor(df=train_data, target_col=self.target_col).start()
+            x_val, y_val = self.preprocessor(df=val_data, target_col=self.target_col).start()
             # Define and train model
             self.model.fit(x_train, y_train, verbose=False, eval_set=[(x_val, y_val)])
             # Predict and evaluate model quality

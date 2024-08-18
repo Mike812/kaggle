@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
+from stop_words import get_stop_words
 
 from utils.preprocessing import Preprocessing
 
@@ -11,9 +12,8 @@ class MentalHealthPreprocessing(Preprocessing):
     """
     def __init__(self, df, target_col, col_sum_threshold, train_val_columns=None):
         """
-
-        :param df:
-        :param train_val_columns:
+        :param df: input dataframe with mental health data
+        :param train_val_columns: columns of dataframe that was used for modeling including bag of words columns
         """
         super().__init__(df=df, target_col=target_col)
         self.train_val_columns = train_val_columns
@@ -26,11 +26,11 @@ class MentalHealthPreprocessing(Preprocessing):
 
     def create_bag_of_words(self):
         """
-
-        :return:
+        :return: bag of words dataframe
         """
         statements = self.df["statement"].fillna("").tolist()
-        count_vec = CountVectorizer()
+        stop_words = get_stop_words("en")
+        count_vec = CountVectorizer(stop_words=stop_words)
         count_vec_fitted = count_vec.fit_transform(statements)
         word_counts = count_vec_fitted.toarray()
         words = count_vec.get_feature_names_out()
@@ -40,9 +40,9 @@ class MentalHealthPreprocessing(Preprocessing):
 
     def filter_bag_of_words(self, bag_of_words):
         """
-
-        :param bag_of_words:
-        :return:
+        Filter dataframe by colsums and regex
+        :param bag_of_words: dataframe
+        :return: filtered bag_of_words dataframe
         """
         bag_of_words = bag_of_words.loc[:, bag_of_words.sum(axis=0) > self.col_sum_threshold]
         bag_of_words = bag_of_words[list(bag_of_words.filter(regex=self.filter_regex))]
@@ -51,8 +51,8 @@ class MentalHealthPreprocessing(Preprocessing):
 
     def start(self):
         """
-
-        :return:
+        Start preprocessing of mental health data
+        :return: preprocessed feature dataframe x and target column y
         """
         bag_of_words = self.create_bag_of_words()
         bag_of_words = self.filter_bag_of_words(bag_of_words=bag_of_words)
@@ -79,4 +79,5 @@ class MentalHealthPreprocessing(Preprocessing):
         x = x.reindex(sorted(x.columns), axis=1)
         # set default value for missing columns and Nan values
         x = x.fillna(0)
+
         return x, y

@@ -12,12 +12,11 @@ class CrossValidationResultBoW(CrossValidationResult):
     """
     def __init__(self, mse_results, xgb_models, acc_results, reports, train_val_columns):
         """
-
-        :param mse_results:
-        :param xgb_models:
-        :param acc_results:
-        :param reports:
-        :param train_val_columns:
+        :param mse_results: mean squared error result list
+        :param xgb_models: xg boost model list
+        :param acc_results: accuracy result list
+        :param reports: classification report list
+        :param train_val_columns: columns of dataframe that was used for modeling including bag of words columns
         """
         super().__init__(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
                          reports=reports)
@@ -31,13 +30,12 @@ class ModelEvaluationBagOfWords:
 
     def __init__(self, train_val_data, preprocessor, target_col, col_sum_threshold, model, splits):
         """
-
-        :param train_val_data:
-        :param preprocessor:
-        :param target_col:
-        :param col_sum_threshold:
-        :param model:
-        :param splits:
+        :param train_val_data: dataframe with training and validation data
+        :param preprocessor: preprocessor class
+        :param target_col: column that will be predicted
+        :param col_sum_threshold: sum of column filter threshold
+        :param model: machine learning model
+        :param splits: number of cross validation rounds
         """
         self.train_val_data = train_val_data
         self.preprocessor = preprocessor
@@ -48,8 +46,7 @@ class ModelEvaluationBagOfWords:
 
     def cross_validate(self):
         """
-
-        :return:
+        :return: CrossValidationResultBoW
         """
         # Prepare cross validation of model predictions
         kf = KFold(n_splits=self.splits, shuffle=True, random_state=42)

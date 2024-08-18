@@ -3,20 +3,23 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 
+from utils.preprocessing import Preprocessing
 
-class AlternateDimPreprocessing:
+
+class AlternateDimPreprocessing(Preprocessing):
     """
     Represents all methods and variables that are needed for the preprocessing of the alternate dimension
     input dataframes. Inspired by https://www.kaggle.com/learn/intermediate-machine-learning and
     https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap learning content.
     """
-    def __init__(self, df, test=False):
+    def __init__(self, df, target_col, test=False):
         """
 
         :param df:
         :param test:
         """
         # train, test or validation dataframe
+        super().__init__(df, target_col)
         self.df = df
         # flag for test data set
         self.test = test
