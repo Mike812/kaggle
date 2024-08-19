@@ -3,20 +3,22 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder
 
+from utils.preprocessing import Preprocessing
 
-class AlternateDimPreprocessing:
+
+class AlternateDimPreprocessing(Preprocessing):
     """
     Represents all methods and variables that are needed for the preprocessing of the alternate dimension
     input dataframes. Inspired by https://www.kaggle.com/learn/intermediate-machine-learning and
     https://www.kaggle.com/code/vaasubisht/eda-statisticaltests-gradient-boosting-shap learning content.
     """
-    def __init__(self, df, test=False):
+    def __init__(self, df, target_col, test=False):
         """
-
-        :param df:
-        :param test:
+        :param df: input dataframe with alternate dimension data
+        :param test: flag for test set
         """
         # train, test or validation dataframe
+        super().__init__(df, target_col)
         self.df = df
         # flag for test data set
         self.test = test
@@ -35,7 +37,7 @@ class AlternateDimPreprocessing:
     def apply_one_hot_encoding(self):
         """
         Function to apply one hot encoding to specific columns of a dataframe
-        :return:
+        :return: dataframe with one hot encoded columns
         """
         one_hot_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
         one_hot_data = pd.DataFrame(one_hot_encoder.fit_transform(self.df[self.one_hot_cols]))
@@ -46,8 +48,8 @@ class AlternateDimPreprocessing:
 
     def apply_imputation(self):
         """
-        Function to apply imputation to specific columns of a dataframe
-        :return:
+        Function to apply imputation to specific numerical columns of a dataframe
+        :return: dataframe with imputed columns
         """
         imputer = SimpleImputer()
         imputed_data = pd.DataFrame(imputer.fit_transform(self.df[self.imputation_cols]))
@@ -60,7 +62,7 @@ class AlternateDimPreprocessing:
     def apply_log_normalization(self):
         """
         Apply log2 transformation to inbalanced columns
-        :return:
+        :return: dataframe with log2 transformed columns
         """
         for col in self.normalization_columns:
             # add 0.1 to values to avoid - inf values in log function; np.seterr(divide='ignore') not needed
@@ -71,7 +73,7 @@ class AlternateDimPreprocessing:
     def start(self):
         """
         Starts preprocessing
-        :return:
+        :return: preprocessed feature dataframe x and target column y. The target column y is missing in the test set.
         """
         self.df = self.apply_imputation()
         self.df = self.apply_one_hot_encoding()

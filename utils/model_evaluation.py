@@ -8,24 +8,26 @@ class ModelEvaluation:
     """
     Consists of all methods and variables that are needed for model evaluation
     """
-    def __init__(self, train_val_data, preprocessor, model):
+    def __init__(self, train_val_data, preprocessor, target_col, model, splits):
         """
-
-        :param train_val_data:
-        :param preprocessor:
-        :param model:
+        :param train_val_data: dataframe with training and validation data
+        :param preprocessor: preprocessor class
+        :param target_col: column that will be predicted
+        :param model: machine learning model
+        :param splits: number of cross validation rounds
         """
         self.train_val_data = train_val_data
         self.preprocessor = preprocessor
+        self.target_col = target_col
         self.model = model
+        self.splits = splits
 
     def cross_validate(self):
         """
-
-        :return:
+        :return: CrossValidationResult
         """
         # Prepare cross validation of model predictions
-        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        kf = KFold(n_splits=self.splits, shuffle=True, random_state=42)
         counter = 1
         mse_results = []
         xgb_models = []
@@ -39,8 +41,8 @@ class ModelEvaluation:
             print(f'Train data: {train_data.shape}')
             print(f'Validation data: {train_data.shape}')
             # Start preprocessing of data needed for modeling
-            x_train, y_train = self.preprocessor(df=train_data).start()
-            x_val, y_val = self.preprocessor(df=val_data).start()
+            x_train, y_train = self.preprocessor(df=train_data, target_col=self.target_col).start()
+            x_val, y_val = self.preprocessor(df=val_data, target_col=self.target_col).start()
             # Define and train model
             self.model.fit(x_train, y_train, verbose=False, eval_set=[(x_val, y_val)])
             # Predict and evaluate model quality

@@ -3,53 +3,29 @@ from sklearn.model_selection import KFold
 from scipy.sparse import csr_matrix
 import time
 
-from utils.cross_validation_result import CrossValidationResult
+from utils.cross_validation_result import CrossValidationResultBoW
+from utils.model_evaluation import ModelEvaluation
 
 
-class CrossValidationResultBoW(CrossValidationResult):
-    """
-    Represents result object of cross validation
-    """
-    def __init__(self, mse_results, xgb_models, acc_results, reports, train_val_columns):
-        """
-
-        :param mse_results:
-        :param xgb_models:
-        :param acc_results:
-        :param reports:
-        :param train_val_columns:
-        """
-        super().__init__(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
-                         reports=reports)
-        self.train_val_columns = train_val_columns
-
-
-class ModelEvaluationBagOfWords:
+class ModelEvaluationBagOfWords(ModelEvaluation):
     """
     Consists of all methods and variables that are needed for model evaluation
     """
-
     def __init__(self, train_val_data, preprocessor, target_col, col_sum_threshold, model, splits):
         """
-
-        :param train_val_data:
-        :param preprocessor:
-        :param target_col:
-        :param col_sum_threshold:
-        :param model:
-        :param splits:
+        :param train_val_data: dataframe with training and validation data
+        :param preprocessor: preprocessor class
+        :param target_col: column that will be predicted
+        :param model: machine learning model
+        :param splits: number of cross validation rounds
+        :param col_sum_threshold: sum of column filter threshold
         """
-        self.train_val_data = train_val_data
-        self.preprocessor = preprocessor
-        self.target_col = target_col
+        super().__init__(train_val_data, preprocessor, target_col, model, splits)
         self.col_sum_threshold = col_sum_threshold
-        self.model = model
-        self.splits = splits
 
     def cross_validate(self):
         """
-
-        :return:
+        :return: CrossValidationResultBoW
         """
         # Prepare cross validation of model predictions
         kf = KFold(n_splits=self.splits, shuffle=True, random_state=42)
