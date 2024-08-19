@@ -14,9 +14,8 @@ class AlternateDimPreprocessing(Preprocessing):
     """
     def __init__(self, df, target_col, test=False):
         """
-
-        :param df:
-        :param test:
+        :param df: input dataframe with alternate dimension data
+        :param test: flag for test set
         """
         # train, test or validation dataframe
         super().__init__(df, target_col)
@@ -38,7 +37,7 @@ class AlternateDimPreprocessing(Preprocessing):
     def apply_one_hot_encoding(self):
         """
         Function to apply one hot encoding to specific columns of a dataframe
-        :return:
+        :return: dataframe with one hot encoded columns
         """
         one_hot_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
         one_hot_data = pd.DataFrame(one_hot_encoder.fit_transform(self.df[self.one_hot_cols]))
@@ -49,8 +48,8 @@ class AlternateDimPreprocessing(Preprocessing):
 
     def apply_imputation(self):
         """
-        Function to apply imputation to specific columns of a dataframe
-        :return:
+        Function to apply imputation to specific numerical columns of a dataframe
+        :return: dataframe with imputed columns
         """
         imputer = SimpleImputer()
         imputed_data = pd.DataFrame(imputer.fit_transform(self.df[self.imputation_cols]))
@@ -63,7 +62,7 @@ class AlternateDimPreprocessing(Preprocessing):
     def apply_log_normalization(self):
         """
         Apply log2 transformation to inbalanced columns
-        :return:
+        :return: dataframe with log2 transformed columns
         """
         for col in self.normalization_columns:
             # add 0.1 to values to avoid - inf values in log function; np.seterr(divide='ignore') not needed
@@ -74,7 +73,7 @@ class AlternateDimPreprocessing(Preprocessing):
     def start(self):
         """
         Starts preprocessing
-        :return:
+        :return: preprocessed feature dataframe x and target column y. The target column y is missing in the test set.
         """
         self.df = self.apply_imputation()
         self.df = self.apply_one_hot_encoding()

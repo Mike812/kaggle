@@ -15,6 +15,7 @@ df_test = pd.read_csv("../data/test.csv")
 
 target_col = "Transported"
 
+
 # Test all preprocessing methods
 class TestPreprocessing:
 

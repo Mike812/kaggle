@@ -11,12 +11,14 @@ def main():
     train_val_data = pd.read_csv("../data/train.csv")
     test_data = pd.read_csv("../data/test.csv")
     target_col = "Transported"
-
     model = XGBClassifier(n_estimators=500, learning_rate=0.1, early_stopping_rounds=5)
+    cv_splits = 5
+
     cv_result = ModelEvaluation(train_val_data=train_val_data,
                                 preprocessor=AlternateDimPreprocessing,
                                 target_col=target_col,
-                                model=model).cross_validate()
+                                model=model,
+                                splits=cv_splits).cross_validate()
 
     print("\nFinal model:")
     passenger_ids = test_data["PassengerId"]
