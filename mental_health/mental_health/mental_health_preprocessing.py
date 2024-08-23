@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from stop_words import get_stop_words
 
-from utils.preprocessing import Preprocessing
+from utils.preprocessing import Preprocessing, prepare_text_with_regex
 
 
 class MentalHealthPreprocessing(Preprocessing):
@@ -45,7 +45,7 @@ class MentalHealthPreprocessing(Preprocessing):
         :return: filtered bag_of_words dataframe
         """
         bag_of_words = bag_of_words.loc[:, bag_of_words.sum(axis=0) > self.col_sum_threshold]
-        bag_of_words = bag_of_words[list(bag_of_words.filter(regex=self.filter_regex))]
+        # bag_of_words = bag_of_words[list(bag_of_words.filter(regex=self.filter_regex))]
 
         return bag_of_words
 
@@ -54,6 +54,7 @@ class MentalHealthPreprocessing(Preprocessing):
         Start preprocessing of mental health data
         :return: preprocessed feature dataframe x and target column y
         """
+        self.df['statement'] = self.df['statement'].apply(lambda x: prepare_text_with_regex(str(x)))
         bag_of_words = self.create_bag_of_words()
         bag_of_words = self.filter_bag_of_words(bag_of_words=bag_of_words)
         preprocessed_df = pd.concat([self.df, bag_of_words], axis=1)
