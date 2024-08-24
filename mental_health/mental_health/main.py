@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 import pickle
 import os
+import numpy
 
 from mental_health.mental_health.model_evaluation_bag_of_words import ModelEvaluationBagOfWords
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
@@ -61,8 +62,8 @@ def main():
     # save final model and prepared data for jupyter notebook
     pickle.dump(xgb_final_model, open(data_path+"xgb_mental_health.pkl", "wb"))
     write_to_csv(file=data_path+"train_val_columns.csv", data=train_val_columns)
-    write_to_csv(file=data_path+"y_test.csv", data=y_test)
-    write_to_csv(file=data_path+"y_pred.csv", data=y_pred)
+    numpy.savetxt(data_path + "y_test.csv", y_test, delimiter=",")
+    numpy.savetxt(data_path + "y_pred.csv", y_pred, delimiter=",")
 
 
 if __name__ == "__main__":
