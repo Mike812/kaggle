@@ -10,9 +10,7 @@ df_small = pd.DataFrame({"PassengerId": [1, 2, 3], "HomePlanet": ["Earth", "Mars
                          "Age": [12, 21, None], "VIP": [1, 0, 1], "RoomService": [0, 3.9, 31.9],
                          "FoodCourt": [21, None, 90], "ShoppingMall": [None, 12, 21], "Spa": [12, 21, 12],
                          "VRDeck": [100, 0, 0], "Name": ["A", "B", "C"], "Transported": [1, 0, 1]})
-
 df_test = pd.read_csv("../data/test.csv")
-
 target_col = "Transported"
 
 

@@ -18,7 +18,7 @@ def prepare_text_with_regex(text):
     text = re.sub(r'[%s]' % re.escape(string.punctuation), '', text)  # Remove punctuation
     text = re.sub(r'\n', '', text)  # Remove newlines
     text = re.sub(r'\w*\d\w*', '', text)  # Remove words containing numbers
-    return text
+    return text.strip()
 
 
 class Preprocessing(ABC):

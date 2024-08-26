@@ -19,8 +19,6 @@ class MentalHealthPreprocessing(Preprocessing):
         self.train_val_columns = train_val_columns
         # number of times word have to appear in statements
         self.col_sum_threshold = col_sum_threshold
-        # have to contain characters
-        self.filter_regex = '[A-Za-z]'
         # irrelevant columns for modeling
         self.columns_to_drop = [self.target_col, "statement"]
 
@@ -40,12 +38,11 @@ class MentalHealthPreprocessing(Preprocessing):
 
     def filter_bag_of_words(self, bag_of_words):
         """
-        Filter dataframe by colsums and regex
+        Filter dataframe by colsums
         :param bag_of_words: dataframe
         :return: filtered bag_of_words dataframe
         """
         bag_of_words = bag_of_words.loc[:, bag_of_words.sum(axis=0) > self.col_sum_threshold]
-        # bag_of_words = bag_of_words[list(bag_of_words.filter(regex=self.filter_regex))]
 
         return bag_of_words
 
