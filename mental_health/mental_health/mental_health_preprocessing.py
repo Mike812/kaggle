@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from stop_words import get_stop_words
 
-from utils.preprocessing import Preprocessing
+from utils.preprocessing import Preprocessing, prepare_text_with_regex
 
 
 class MentalHealthPreprocessing(Preprocessing):
@@ -19,8 +19,6 @@ class MentalHealthPreprocessing(Preprocessing):
         self.train_val_columns = train_val_columns
         # number of times word have to appear in statements
         self.col_sum_threshold = col_sum_threshold
-        # have to contain characters
-        self.filter_regex = '[A-Za-z]'
         # irrelevant columns for modeling
         self.columns_to_drop = [self.target_col, "statement"]
 
@@ -40,12 +38,11 @@ class MentalHealthPreprocessing(Preprocessing):
 
     def filter_bag_of_words(self, bag_of_words):
         """
-        Filter dataframe by colsums and regex
+        Filter dataframe by colsums
         :param bag_of_words: dataframe
         :return: filtered bag_of_words dataframe
         """
         bag_of_words = bag_of_words.loc[:, bag_of_words.sum(axis=0) > self.col_sum_threshold]
-        bag_of_words = bag_of_words[list(bag_of_words.filter(regex=self.filter_regex))]
 
         return bag_of_words
 
@@ -54,6 +51,7 @@ class MentalHealthPreprocessing(Preprocessing):
         Start preprocessing of mental health data
         :return: preprocessed feature dataframe x and target column y
         """
+        self.df['statement'] = self.df['statement'].apply(lambda x: prepare_text_with_regex(str(x)))
         bag_of_words = self.create_bag_of_words()
         bag_of_words = self.filter_bag_of_words(bag_of_words=bag_of_words)
         preprocessed_df = pd.concat([self.df, bag_of_words], axis=1)
