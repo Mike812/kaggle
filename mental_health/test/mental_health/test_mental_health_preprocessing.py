@@ -11,26 +11,34 @@ for dir_name, _, file_names in os.walk(data_path):
     for filename in file_names:
         print(os.path.join(dir_name, filename))
 
-df_small = pd.DataFrame({"statement": ["I think that I am bipolar or suffer from another mental disease",
+df_train = pd.DataFrame({"statement": ["I think that I am bipolar or suffer from another mental disease",
                                        "I think I feel normal."],
                          "status": ["bipolar", "normal"]})
+df_test = pd.DataFrame({"statement": ["I am bipolar or suffer from another mental sickness",
+                                      "I feel normal."],
+                        "status": ["bipolar", "normal"]})
 
-df_test = pd.read_csv(data_path + "combined_data.csv")
+df_expected_bow_train = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [1, 0], "feel": [0, 1],
+                                      "mental": [1, 0], "normal": [0, 1], "suffer": [1, 0], "think": [1, 1]})
+df_expected_bow_test = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [0, 0], "feel": [0, 1],
+                                     "normal": [0, 1], "sickness": [0, 1], "suffer": [1, 0]})
+df_expected_bow_adapted_test_to_train = pd.DataFrame(
+    {"another": [1, 0], "bipolar": [1, 0], "disease": [0, 0], "feel": [0, 1],
+     "mental": [0, 0], "normal": [0, 1], "suffer": [1, 0], "think": [0, 0]})
+
+df_combined = pd.read_csv(data_path + "combined_data.csv")
 target_col = "status"
-
-expected_bow = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [1, 0], "feel": [0, 1],
-                             "mental": [1, 0], "normal": [0, 1], "suffer": [1, 0], "think": [1, 1]})
 
 
 class TestMentalHealthPreprocessing:
     def test_create_bag_of_words(self):
         mental_health_preprocessing = MentalHealthPreprocessing(
-            df=df_small, target_col=target_col,
+            df=df_train, target_col=target_col,
             col_sum_threshold=1
         )
         bag_of_words = mental_health_preprocessing.create_bag_of_words()
         print("Compare bag of words dataframes")
-        assert bag_of_words.equals(expected_bow)
+        assert bag_of_words.equals(df_expected_bow_train)
 
         filtered_bag_of_words = mental_health_preprocessing.filter_bag_of_words(bag_of_words)
         expected_filtered_bow = pd.DataFrame({"think": [1, 1]})
@@ -40,16 +48,16 @@ class TestMentalHealthPreprocessing:
 
     def test_start_preprocessing(self):
         mental_health_preprocessing = MentalHealthPreprocessing(
-            df=df_small, target_col=target_col,
+            df=df_train, target_col=target_col,
             col_sum_threshold=0
         )
         x, y = mental_health_preprocessing.start()
-        assert x.equals(expected_bow)
+        assert x.equals(df_expected_bow_train)
         # check label encoding
         assert y[0] == 0
         assert y[1] == 1
 
-        train_val_data, test_data = train_test_split(df_test, test_size=0.3, random_state=42)
+        train_val_data, test_data = train_test_split(df_combined, test_size=0.3, random_state=42)
 
         mental_health_preprocessing = MentalHealthPreprocessing(
             df=test_data, target_col=target_col,
@@ -58,3 +66,13 @@ class TestMentalHealthPreprocessing:
         x, y = mental_health_preprocessing.start()
 
         assert x.shape[1] < 3000
+
+    def test_adapt_test_to_training_data(self):
+        mental_health_preprocessing = MentalHealthPreprocessing(
+            df=df_test, target_col=target_col,
+            col_sum_threshold=0, train_val_columns=df_expected_bow_train.columns.tolist()
+        )
+        x = mental_health_preprocessing.adapt_test_to_training_data(test_df=df_expected_bow_test)
+        print(x.head())
+        print(df_expected_bow_adapted_test_to_train.head())
+        assert x.equals(df_expected_bow_adapted_test_to_train)
