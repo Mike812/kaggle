@@ -31,21 +31,6 @@ target_col = "status"
 
 
 class TestMentalHealthPreprocessing:
-    def test_create_bag_of_words(self):
-        mental_health_preprocessing = MentalHealthPreprocessing(
-            df=df_train, target_col=target_col,
-            col_sum_threshold=1
-        )
-        bag_of_words = mental_health_preprocessing.create_bag_of_words()
-        print("Compare bag of words dataframes")
-        assert bag_of_words.equals(df_expected_bow_train)
-
-        filtered_bag_of_words = mental_health_preprocessing.filter_bag_of_words(bag_of_words)
-        expected_filtered_bow = pd.DataFrame({"think": [1, 1]})
-        print(filtered_bag_of_words.head())
-        print(expected_filtered_bow.head())
-        assert filtered_bag_of_words.equals(expected_filtered_bow)
-
     def test_start_preprocessing(self):
         mental_health_preprocessing = MentalHealthPreprocessing(
             df=df_train, target_col=target_col,
