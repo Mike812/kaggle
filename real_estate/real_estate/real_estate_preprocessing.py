@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from utils.preprocessing import Preprocessing, create_bag_of_words, filter_bag_of_words, create_and_prepare_bag_of_words
+from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, adapt_test_to_training_data
 
 
 def prepare_bathrooms(df):
@@ -51,13 +51,19 @@ class RealEstatePreprocessing(Preprocessing):
 
     """
 
-    def __init__(self, df, target_col):
+    def __init__(self, df, target_col, train_val_columns=None):
         """
 
         :param df:
         :param target_col:
         """
         super().__init__(df, target_col)
+        self.columns_to_drop = [self.target_col, "title", "displayAddress", "type", "priceDuration", "index",
+                                "addedOn", "furnishing", "description"]
+        self.df_columns = self.df.columns
+        self.train_val_columns = train_val_columns
+        self.title_col_sum_threshold = 100
+        self.description_col_sum_threshold = 200
 
     def start(self):
         """
@@ -68,13 +74,30 @@ class RealEstatePreprocessing(Preprocessing):
         self.df = prepare_bedrooms(df=self.df)
         self.df = prepare_size_min(df=self.df)
 
-        title_bag_of_words_prepared = create_and_prepare_bag_of_words(series=self.df["title"],
-                                                                      col_sum_threshold=50)
-        description_bag_of_words_prepared = create_and_prepare_bag_of_words(series=self.df["description"],
-                                                                            col_sum_threshold=50)
-        preprocessed_df = pd.concat([self.df, title_bag_of_words_prepared, description_bag_of_words_prepared],
+        df_columns = self.df.columns.to_list()
+        title_bag_of_words_prepared = (
+            create_and_prepare_bag_of_words(series=self.df["title"],
+                                            col_sum_threshold=self.title_col_sum_threshold,
+                                            df_columns=df_columns,
+                                            postfix="title"))
+        preprocessed_df = pd.concat([self.df, title_bag_of_words_prepared], axis=1)
+
+        description_bag_of_words_prepared = (
+            create_and_prepare_bag_of_words(series=self.df["description"],
+                                            col_sum_threshold=self.description_col_sum_threshold,
+                                            df_columns=preprocessed_df.columns.to_list(),
+                                            postfix="description"))
+        preprocessed_df = pd.concat([preprocessed_df, description_bag_of_words_prepared],
                                     axis=1)
-        y = preprocessed_df[self.target_col]
-        x = preprocessed_df.drop(self.target_col, axis=1)
+
+        x = preprocessed_df.drop(self.columns_to_drop, axis=1).fillna(0)
+        y = self.df[self.target_col]
+
+        if self.train_val_columns:
+            x = adapt_test_to_training_data(test_df=x, train_val_columns=self.train_val_columns)
+        else:
+            x = x.reindex(sorted(x.columns), axis=1)
+            # set default value for missing columns and Nan values
+            x = x.fillna(0)
 
         return x, y

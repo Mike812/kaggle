@@ -1,7 +1,7 @@
 from sklearn.metrics import mean_squared_error, accuracy_score, classification_report
 from sklearn.model_selection import KFold
 
-from utils.cross_validation_result import CrossValidationResult
+from utils.cross_validation_result import CVResultClassification
 
 
 class ModelEvaluation:
@@ -59,5 +59,5 @@ class ModelEvaluation:
             reports.append(report)
             counter += 1
 
-        return CrossValidationResult(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
-                                     reports=reports)
+        return CVResultClassification(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
+                                      reports=reports)

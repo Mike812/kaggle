@@ -6,7 +6,7 @@ import pickle
 import os
 import numpy
 
-from mental_health.mental_health.model_evaluation_bag_of_words import ModelEvaluationBagOfWords
+from utils.model_evaluation_bag_of_words import ModelEvaluationBagOfWords
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
 from utils.cross_validation_result import print_cv_result
 from utils.io_utils import write_to_csv
@@ -20,20 +20,16 @@ for dir_name, _, file_names in os.walk(data_path):
 
 def main():
     # Read data from kaggle as dataframe and define variables
-
     combined_data = pd.read_csv(data_path+"combined_data.csv", index_col=0)
     target_col = "status"
     model = XGBClassifier(n_estimators=500, learning_rate=0.1, early_stopping_rounds=5)
     cv_splits = 3
     test_size = 0.3
-    col_sum_threshold_train = 150
-    col_sum_threshold_test = 50
 
     train_val_data, test_data = train_test_split(combined_data, test_size=test_size, random_state=42)
     cv_result = ModelEvaluationBagOfWords(train_val_data=train_val_data.reset_index(),
                                           preprocessor=MentalHealthPreprocessing,
                                           target_col=target_col,
-                                          col_sum_threshold=col_sum_threshold_train,
                                           model=model,
                                           splits=cv_splits).cross_validate()
 
@@ -47,8 +43,7 @@ def main():
 
     # Start preprocessing of test data
     x_test, y_test = MentalHealthPreprocessing(df=test_data.reset_index(), target_col=target_col,
-                                               train_val_columns=train_val_columns,
-                                               col_sum_threshold=col_sum_threshold_test).start()
+                                               train_val_columns=train_val_columns).start()
 
     # predict and evaluate final results
     y_pred = xgb_final_model.predict(x_test)

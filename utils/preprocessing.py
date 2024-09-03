@@ -53,18 +53,67 @@ def filter_bag_of_words(bag_of_words, col_sum_threshold):
     return bag_of_words
 
 
-def create_and_prepare_bag_of_words(series, col_sum_threshold):
+def rename_bow_columns(df_bow, df_columns, postfix):
+    """
+
+    :param df_bow:
+    :param df_columns:
+    :param postfix:
+    :return:
+    """
+    columns_to_drop = []
+    for col in df_columns:
+        if col in df_bow:
+            df_bow[col + "_in_" + postfix] = df_bow[col]
+            columns_to_drop.append(col)
+    if columns_to_drop:
+        df_bow = df_bow.drop(columns_to_drop, axis=1)
+
+    return df_bow
+
+
+def create_and_prepare_bag_of_words(series, col_sum_threshold, df_columns=None, postfix=None):
     """
 
     :param series:
     :param col_sum_threshold:
+    :param df_columns: 
+    :param postfix:
     :return:
     """
     series = series.apply(lambda x: prepare_text_with_regex(str(x)))
     bag_of_words = create_bag_of_words(series=series)
     bag_of_words_filtered = filter_bag_of_words(bag_of_words=bag_of_words, col_sum_threshold=col_sum_threshold)
+    if df_columns:
+        bag_of_words_filtered = rename_bow_columns(df_bow=bag_of_words_filtered, df_columns=df_columns, postfix=postfix)
 
-    return bag_of_words_filtered
+    return bag_of_words_filtered.reset_index()
+
+
+def adapt_test_to_training_data(test_df, train_val_columns):
+    """
+    Adds missing training columns to test dataframe and removes columns that are missing in training dataframe.
+    :param test_df: x data of test dataframe
+    :param train_val_columns:
+    :return: adapted x data of test dataframe to training data
+    """
+    test_columns_set = set(test_df.columns.tolist())
+    train_val_columns_set = set(train_val_columns)
+    missing_train_val_columns = list(train_val_columns_set - test_columns_set)
+    missing_test_columns = list(test_columns_set - train_val_columns_set)
+    if missing_train_val_columns:
+        # create missing columns
+        df_missing_cols = pd.DataFrame(columns=missing_train_val_columns)
+        test_df = pd.concat([test_df, df_missing_cols], axis=1)
+    if missing_test_columns:
+        # drop columns that were not present in the train bag of words matrix
+        test_df = test_df.drop(missing_test_columns, axis=1)
+
+    test_df = test_df.reindex(sorted(test_df.columns), axis=1)
+    # set default value for missing columns and Nan values
+    test_df = test_df.fillna(0)
+
+    return test_df
 
 
 class Preprocessing(ABC):

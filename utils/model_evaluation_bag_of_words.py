@@ -3,7 +3,7 @@ from sklearn.model_selection import KFold
 from scipy.sparse import csr_matrix
 import time
 
-from utils.cross_validation_result import CrossValidationResultBoW
+from utils.cross_validation_result import CVResultClassificationBoW
 from utils.model_evaluation import ModelEvaluation
 
 
@@ -11,19 +11,17 @@ class ModelEvaluationBagOfWords(ModelEvaluation):
     """
     Consists of all methods and variables that are needed for model evaluation
     """
-    def __init__(self, train_val_data, preprocessor, target_col, col_sum_threshold, model, splits):
+    def __init__(self, train_val_data, preprocessor, target_col, model, splits):
         """
         :param train_val_data: dataframe with training and validation data
         :param preprocessor: preprocessor class
         :param target_col: column that will be predicted
         :param model: machine learning model
         :param splits: number of cross validation rounds
-        :param col_sum_threshold: sum of column filter threshold
         """
         super().__init__(train_val_data, preprocessor, target_col, model, splits)
-        self.col_sum_threshold = col_sum_threshold
 
-    def cross_validate(self):
+    def cross_validate(self, transform_to_sparse=True):
         """
         :return: CrossValidationResultBoW
         """
@@ -34,8 +32,7 @@ class ModelEvaluationBagOfWords(ModelEvaluation):
         xgb_models = []
         acc_results = []
         reports = []
-        x_train_val, y_train_val = self.preprocessor(df=self.train_val_data, target_col=self.target_col,
-                                                     col_sum_threshold=self.col_sum_threshold).start()
+        x_train_val, y_train_val = self.preprocessor(df=self.train_val_data, target_col=self.target_col).start()
         train_val_columns = x_train_val.columns.tolist()
         print(f'Train data: {x_train_val.shape}')
         print(f'Validation data: {y_train_val.shape}')
@@ -43,10 +40,15 @@ class ModelEvaluationBagOfWords(ModelEvaluation):
         for train_index, val_index in (kf.split(self.train_val_data)):
             print(f'\nFold: {counter}')
             start_time = time.time()
-            # transform bag of words matrix to sparse matrix to speed up training
-            x_train = csr_matrix(x_train_val.loc[train_index].values)
+            if transform_to_sparse:
+                # transform bag of words matrix to sparse matrix to speed up training
+                x_train = csr_matrix(x_train_val.loc[train_index].values)
+                x_val = csr_matrix(x_train_val.loc[val_index].values)
+            else:
+                x_train = x_train_val.loc[train_index]
+                x_val = x_train_val.loc[val_index]
+
             y_train = y_train_val[train_index]
-            x_val = csr_matrix(x_train_val.loc[val_index].values)
             y_val = y_train_val[val_index]
             # train model
             self.model.fit(x_train, y_train, verbose=False, eval_set=[(x_val, y_val)])
@@ -66,5 +68,5 @@ class ModelEvaluationBagOfWords(ModelEvaluation):
             print("Elapsed time: " + str(round(end_time - start_time, 2)) + " seconds")
             counter += 1
 
-        return CrossValidationResultBoW(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
-                                        reports=reports, train_val_columns=train_val_columns)
+        return CVResultClassificationBoW(mse_results=mse_results, xgb_models=xgb_models, acc_results=acc_results,
+                                         reports=reports, train_val_columns=train_val_columns)
