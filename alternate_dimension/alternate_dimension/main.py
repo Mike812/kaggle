@@ -18,7 +18,7 @@ def main():
                                 preprocessor=AlternateDimPreprocessing,
                                 target_col=target_col,
                                 model=model,
-                                splits=cv_splits).cross_validate()
+                                splits=cv_splits).cross_validate_classification()
 
     print("\nFinal model:")
     passenger_ids = test_data["PassengerId"]

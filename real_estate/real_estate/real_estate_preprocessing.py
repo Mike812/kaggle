@@ -78,14 +78,14 @@ class RealEstatePreprocessing(Preprocessing):
         title_bag_of_words_prepared = (
             create_and_prepare_bag_of_words(series=self.df["title"],
                                             col_sum_threshold=self.title_col_sum_threshold,
-                                            df_columns=df_columns,
+                                            columns=df_columns,
                                             postfix="title"))
         preprocessed_df = pd.concat([self.df, title_bag_of_words_prepared], axis=1)
 
         description_bag_of_words_prepared = (
             create_and_prepare_bag_of_words(series=self.df["description"],
                                             col_sum_threshold=self.description_col_sum_threshold,
-                                            df_columns=preprocessed_df.columns.to_list(),
+                                            columns=preprocessed_df.columns.to_list(),
                                             postfix="description"))
         preprocessed_df = pd.concat([preprocessed_df, description_bag_of_words_prepared],
                                     axis=1)

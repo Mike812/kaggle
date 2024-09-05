@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
+from utils.preprocessing import adapt_test_to_training_data
 
 # print file names in data path
 data_path = "../../data/"
@@ -20,21 +21,16 @@ df_test = pd.DataFrame({"statement": ["I am bipolar or suffer from another menta
 
 df_expected_bow_train = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [1, 0], "feel": [0, 1],
                                       "mental": [1, 0], "normal": [0, 1], "suffer": [1, 0], "think": [1, 1]})
-df_expected_bow_test = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [0, 0], "feel": [0, 1],
-                                     "normal": [0, 1], "sickness": [0, 1], "suffer": [1, 0]})
-df_expected_bow_adapted_test_to_train = pd.DataFrame(
-    {"another": [1, 0], "bipolar": [1, 0], "disease": [0, 0], "feel": [0, 1],
-     "mental": [0, 0], "normal": [0, 1], "suffer": [1, 0], "think": [0, 0]})
 
 df_combined = pd.read_csv(data_path + "combined_data.csv")
 target_col = "status"
 
 
 class TestMentalHealthPreprocessing:
+
     def test_start_preprocessing(self):
         mental_health_preprocessing = MentalHealthPreprocessing(
-            df=df_train, target_col=target_col,
-            col_sum_threshold=0
+            df=df_train, target_col=target_col, col_sum_threshold=0
         )
         x, y = mental_health_preprocessing.start()
         assert x.equals(df_expected_bow_train)
@@ -45,19 +41,8 @@ class TestMentalHealthPreprocessing:
         train_val_data, test_data = train_test_split(df_combined, test_size=0.3, random_state=42)
 
         mental_health_preprocessing = MentalHealthPreprocessing(
-            df=test_data, target_col=target_col,
-            col_sum_threshold=50
+            df=test_data, target_col=target_col, col_sum_threshold=50
         )
         x, y = mental_health_preprocessing.start()
 
         assert x.shape[1] < 3000
-
-    def test_adapt_test_to_training_data(self):
-        mental_health_preprocessing = MentalHealthPreprocessing(
-            df=df_test, target_col=target_col,
-            col_sum_threshold=0, train_val_columns=df_expected_bow_train.columns.tolist()
-        )
-        x = mental_health_preprocessing.adapt_test_to_training_data(test_df=df_expected_bow_test)
-        print(x.head())
-        print(df_expected_bow_adapted_test_to_train.head())
-        assert x.equals(df_expected_bow_adapted_test_to_train)

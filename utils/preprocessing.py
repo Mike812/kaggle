@@ -53,41 +53,41 @@ def filter_bag_of_words(bag_of_words, col_sum_threshold):
     return bag_of_words
 
 
-def rename_bow_columns(df_bow, df_columns, postfix):
+def rename_bow_columns(df, columns, postfix):
     """
-
-    :param df_bow:
-    :param df_columns:
-    :param postfix:
+    Rename bag of words columns
+    :param df: dataframe
+    :param columns: list of columns to rename if in df
+    :param postfix: postfix to rename the column
     :return:
     """
     columns_to_drop = []
-    for col in df_columns:
-        if col in df_bow:
-            df_bow[col + "_in_" + postfix] = df_bow[col]
+    for col in columns:
+        if col in df:
+            df[col + "_in_" + postfix] = df[col]
             columns_to_drop.append(col)
     if columns_to_drop:
-        df_bow = df_bow.drop(columns_to_drop, axis=1)
+        df = df.drop(columns_to_drop, axis=1)
 
-    return df_bow
+    return df
 
 
-def create_and_prepare_bag_of_words(series, col_sum_threshold, df_columns=None, postfix=None):
+def create_and_prepare_bag_of_words(series, col_sum_threshold, columns=None, postfix=None):
     """
-
-    :param series:
-    :param col_sum_threshold:
-    :param df_columns: 
-    :param postfix:
-    :return:
+    Create bag of words from series, filter and rename columns
+    :param series: dataframe column that is used for bow transformation
+    :param col_sum_threshold: filter threshold wrt. column sum
+    :param columns: list of columns to check for renaming
+    :param postfix: postfix to rename the column
+    :return: prepared bag of words
     """
     series = series.apply(lambda x: prepare_text_with_regex(str(x)))
     bag_of_words = create_bag_of_words(series=series)
-    bag_of_words_filtered = filter_bag_of_words(bag_of_words=bag_of_words, col_sum_threshold=col_sum_threshold)
-    if df_columns:
-        bag_of_words_filtered = rename_bow_columns(df_bow=bag_of_words_filtered, df_columns=df_columns, postfix=postfix)
+    bag_of_words_prepared = filter_bag_of_words(bag_of_words=bag_of_words, col_sum_threshold=col_sum_threshold)
+    if columns:
+        bag_of_words_prepared = rename_bow_columns(df=bag_of_words_prepared, columns=columns, postfix=postfix)
 
-    return bag_of_words_filtered.reset_index()
+    return bag_of_words_prepared.reset_index(drop=True)
 
 
 def adapt_test_to_training_data(test_df, train_val_columns):

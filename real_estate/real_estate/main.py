@@ -5,7 +5,7 @@ from xgboost import XGBRegressor
 import os
 
 from utils.cross_validation_result import print_cv_result
-from utils.model_evaluation_bag_of_words import ModelEvaluationBagOfWords
+from utils.model_evaluation import ModelEvaluationBagOfWords
 from real_estate.real_estate.real_estate_preprocessing import RealEstatePreprocessing
 
 # print file names in data path
@@ -28,7 +28,7 @@ def main():
                                           preprocessor=RealEstatePreprocessing,
                                           target_col=target_col,
                                           model=model,
-                                          splits=cv_splits).cross_validate(transform_to_sparse=False)
+                                          splits=cv_splits).cross_validate_classification(transform_to_sparse=False)
 
     print("\nFinal model:")
     # Pick best model from cross validation

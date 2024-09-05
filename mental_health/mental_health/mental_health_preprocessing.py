@@ -8,7 +8,7 @@ class MentalHealthPreprocessing(Preprocessing):
     """
     Represents all methods and variables that are needed for the preprocessing of the mental health input dataframes.
     """
-    def __init__(self, df, target_col, train_val_columns=None):
+    def __init__(self, df, target_col, col_sum_threshold=150, train_val_columns=None):
         """
         :param df: input dataframe with mental health data
         :param train_val_columns: columns of dataframe that was used for modeling including bag of words columns
@@ -16,10 +16,7 @@ class MentalHealthPreprocessing(Preprocessing):
         super().__init__(df=df, target_col=target_col)
         self.train_val_columns = train_val_columns
         # col sums: number of times word have to appear in statements
-        if train_val_columns:
-            self.col_sum_threshold = 50
-        else:
-            self.col_sum_threshold = 150
+        self.col_sum_threshold = col_sum_threshold
         # irrelevant columns for modeling
         self.columns_to_drop = [self.target_col, "statement"]
 
@@ -29,7 +26,9 @@ class MentalHealthPreprocessing(Preprocessing):
         :return: preprocessed feature dataframe x and target column y
         """
         bag_of_words_prepared = create_and_prepare_bag_of_words(series=self.df["statement"],
-                                                                col_sum_threshold=self.col_sum_threshold)
+                                                                col_sum_threshold=self.col_sum_threshold,
+                                                                columns=self.df.columns.to_list(),
+                                                                postfix="statement")
         preprocessed_df = pd.concat([self.df, bag_of_words_prepared], axis=1)
         y = preprocessed_df[self.target_col]
         # encode mental health status
