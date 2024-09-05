@@ -4,7 +4,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
-from utils.preprocessing import adapt_test_to_training_data
 
 # print file names in data path
 data_path = "../../data/"

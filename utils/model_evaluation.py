@@ -1,9 +1,9 @@
-from sklearn.metrics import mean_squared_error, accuracy_score, classification_report
+from sklearn.metrics import mean_squared_error, accuracy_score, classification_report, r2_score
 from sklearn.model_selection import KFold
 from scipy.sparse import csr_matrix
 import time
 
-from utils.cross_validation_result import CVResultClassificationBoW, CVResultClassification
+from utils.cross_validation_result import CVResultClassificationBoW, CVResultClassification, CVResultRegressionBow
 
 
 class ModelEvaluation:
@@ -27,7 +27,7 @@ class ModelEvaluation:
         self.splits = splits
         self.bow = bow
 
-    def cross_validate_classification(self, transform_to_sparse=True):
+    def cross_validate_classification(self, x_to_sparse_matrix=True):
         """
         Cross validate a classification model
         :return: CVResultClassification or CrossValidationResultBoW if a bag of words transformation is used
@@ -35,8 +35,8 @@ class ModelEvaluation:
         # Prepare cross validation of model predictions
         kf = KFold(n_splits=self.splits, shuffle=True, random_state=42)
         counter = 1
-        mse_results = []
         xgb_models = []
+        mse_results = []
         acc_results = []
         reports = []
         x_train_val, y_train_val = self.preprocessor(df=self.train_val_data, target_col=self.target_col).start()
@@ -47,7 +47,7 @@ class ModelEvaluation:
         for train_index, val_index in (kf.split(self.train_val_data)):
             print(f'\nFold: {counter}')
             start_time = time.time()
-            if transform_to_sparse:
+            if x_to_sparse_matrix:
                 # transform bag of words matrix to sparse matrix to speed up training
                 x_train = csr_matrix(x_train_val.loc[train_index].values)
                 x_val = csr_matrix(x_train_val.loc[val_index].values)
@@ -67,10 +67,10 @@ class ModelEvaluation:
             print("Mean squared error: " + str(mse))
             print("Model accuracy: " + str(acc))
             print("Classification report:\n " + str(report))
+            xgb_models.append(self.model)
             mse_results.append(mse)
             acc_results.append(acc)
             reports.append(report)
-            xgb_models.append(self.model)
             end_time = time.time()
             print("Elapsed time: " + str(round(end_time - start_time, 2)) + " seconds")
             counter += 1
@@ -83,3 +83,50 @@ class ModelEvaluation:
                                             reports=reports)
 
         return result
+
+    def cross_validate_regression(self, x_to_sparse_matrix=True):
+        """
+        Cross validate a regression model
+        :return: CVResultClassification or CrossValidationResultBoW if a bag of words transformation is used
+        """
+        # Prepare cross validation of model predictions
+        kf = KFold(n_splits=self.splits, shuffle=True, random_state=42)
+        counter = 1
+        xgb_models = []
+        mse_results = []
+        r2_results = []
+        x_train_val, y_train_val = self.preprocessor(df=self.train_val_data, target_col=self.target_col).start()
+        train_val_columns = x_train_val.columns.tolist()
+        print(f'Train data: {x_train_val.shape}')
+        print(f'Validation data: {y_train_val.shape}')
+        # Start cross validation
+        for train_index, val_index in (kf.split(self.train_val_data)):
+            print(f'\nFold: {counter}')
+            start_time = time.time()
+            if x_to_sparse_matrix:
+                # transform bag of words matrix to sparse matrix to speed up training
+                x_train = csr_matrix(x_train_val.loc[train_index].values)
+                x_val = csr_matrix(x_train_val.loc[val_index].values)
+            else:
+                x_train = x_train_val.loc[train_index]
+                x_val = x_train_val.loc[val_index]
+
+            y_train = y_train_val[train_index]
+            y_val = y_train_val[val_index]
+            # train model
+            self.model.fit(x_train, y_train, verbose=False, eval_set=[(x_val, y_val)])
+            # predict and evaluate model quality
+            y_predictions = self.model.predict(x_val)
+            mse = mean_squared_error(y_predictions, y_val)
+            r2_result = r2_score(y_predictions, y_val)
+            print("Mean squared error: " + str(mse))
+            print("R2 Score: " + str(r2_result))
+            xgb_models.append(self.model)
+            mse_results.append(mse)
+            r2_results.append(r2_result)
+            end_time = time.time()
+            print("Elapsed time: " + str(round(end_time - start_time, 2)) + " seconds")
+            counter += 1
+
+        return CVResultRegressionBow(xgb_models=xgb_models, mse_results=mse_results, r2_results=r2_results,
+                                     train_val_columns=train_val_columns)

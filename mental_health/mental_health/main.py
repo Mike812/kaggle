@@ -8,7 +8,7 @@ import numpy
 
 from utils.model_evaluation import ModelEvaluation
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
-from utils.cross_validation_result import print_cv_result
+from utils.cross_validation_result import print_cv_classification_result
 from utils.io_utils import write_to_csv
 
 # print file names in data path
@@ -40,7 +40,7 @@ def main():
     xgb_final_model = cv_result.xgb_models[best_model_index]
     train_val_columns = cv_result.train_val_columns
     # print results of best model
-    print_cv_result(cv_result=cv_result, best_model_index=best_model_index)
+    print_cv_classification_result(cv_result=cv_result, best_model_index=best_model_index)
 
     # Start preprocessing of test data
     x_test, y_test = MentalHealthPreprocessing(df=test_data.reset_index(drop=True), target_col=target_col,

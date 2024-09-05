@@ -2,7 +2,7 @@ import pandas as pd
 from xgboost import XGBClassifier
 
 from alternate_dimension.alternate_dimension.alternate_dim_preprocessing import AlternateDimPreprocessing
-from utils.cross_validation_result import print_cv_result
+from utils.cross_validation_result import print_cv_classification_result
 from utils.model_evaluation import ModelEvaluation
 
 
@@ -26,7 +26,7 @@ def main():
     x_test = AlternateDimPreprocessing(df=test_data, target_col=target_col, test=True).start()
     # Pick best model from cross validation
     best_model_index = cv_result.mse_results.index(min(cv_result.mse_results))
-    print_cv_result(cv_result=cv_result, best_model_index=best_model_index)
+    print_cv_classification_result(cv_result=cv_result, best_model_index=best_model_index)
     # Predict if passenger will be transported or not
     y_test = cv_result.xgb_models[best_model_index].predict(x_test)
     submission_result = pd.DataFrame({"PassengerId": passenger_ids.values, "Transported": y_test})
