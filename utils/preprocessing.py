@@ -5,6 +5,7 @@ import re
 import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import LabelEncoder
 from stop_words import get_stop_words
 
 
@@ -114,6 +115,16 @@ def adapt_test_to_training_data(test_df, train_val_columns):
     test_df = test_df.fillna(0)
 
     return test_df
+
+
+def encode_labels(series):
+    """
+    Encode distinct string values of a series to numerical labels, e.g. {'NO': 0, 'YES': 1, 'PARTLY': 2}
+    :param series:
+    :return:
+    """
+    label_encoder = LabelEncoder()
+    return label_encoder.fit_transform(series)
 
 
 class Preprocessing(ABC):

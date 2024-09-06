@@ -6,7 +6,7 @@ import pickle
 import os
 import numpy
 
-from utils.model_evaluation import ModelEvaluation
+from utils.model_evaluation import ModelEvaluation, print_classification_results
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
 from utils.cross_validation_result import print_cv_classification_result
 from utils.io_utils import write_to_csv
@@ -49,12 +49,10 @@ def main():
 
     # predict and evaluate final results
     y_pred = xgb_final_model.predict(x_test)
-    mse = mean_squared_error(y_pred, y_test)
-    acc = accuracy_score(y_test, y_pred)
+    mse = mean_squared_error(y_true=y_test, y_pred=y_pred)
+    acc = accuracy_score(y_true=y_test, y_pred=y_pred)
     report = classification_report(y_true=y_test, y_pred=y_pred)
-    print("Mean squared error: " + str(mse))
-    print("Model accuracy: " + str(acc))
-    print("Classification report:\n " + str(report))
+    print_classification_results(mse=mse, acc=acc, report=report)
 
     # save final model and prepared data for jupyter notebook
     pickle.dump(xgb_final_model, open(data_path + "xgb_mental_health.pkl", "wb"))

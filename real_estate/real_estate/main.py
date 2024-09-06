@@ -1,11 +1,13 @@
 import pandas as pd
-from sklearn.metrics import mean_squared_error, r2_score
+from pandas.errors import SettingWithCopyWarning
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 import os
+import warnings
 
 from utils.cross_validation_result import print_cv_regression_result
-from utils.model_evaluation import ModelEvaluation
+from utils.model_evaluation import ModelEvaluation, print_regression_results
 from real_estate.real_estate.real_estate_preprocessing import RealEstatePreprocessing
 
 # print file names in data path
@@ -13,6 +15,8 @@ data_path = "../data/"
 for dir_name, _, file_names in os.walk(data_path):
     for filename in file_names:
         print(os.path.join(dir_name, filename))
+
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
 
 def main():
@@ -44,10 +48,10 @@ def main():
 
     # predict and evaluate final results
     y_pred = xgb_final_model.predict(x_test)
-    mse = mean_squared_error(y_pred, y_test)
+    mse = mean_squared_error(y_true=y_test, y_pred=y_pred)
+    mae = mean_absolute_error(y_true=y_test, y_pred=y_pred)
     r2_result = r2_score(y_true=y_test, y_pred=y_pred)
-    print("Mean squared error: " + str(mse))
-    print("R2 score:\n " + str(r2_result))
+    print_regression_results(mse=mse, mae=mae, r2_result=r2_result)
 
 
 if __name__ == "__main__":

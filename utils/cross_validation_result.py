@@ -17,6 +17,7 @@ def print_cv_regression_result(cv_result, best_model_index):
     :param best_model_index: index of best model
     """
     print("Mean squared error of best model: " + str(cv_result.mse_results[best_model_index]))
+    print("Mean absolute error of best model: " + str(cv_result.mae_results[best_model_index]))
     print("R2 score of best model: " + str(cv_result.r2_results[best_model_index]))
 
 
@@ -70,13 +71,15 @@ class CVResultRegression(CVResult):
     """
     Represents the result object of a cross validation for a regression model
     """
-    def __init__(self, xgb_models, mse_results, r2_results):
+    def __init__(self, xgb_models, mse_results, mae_results, r2_results):
         """
         :param xgb_models: xg boost model list
         :param mse_results: mean squared error result list
+        :param mae_results: mean absolute error result list
         :param r2_results: r2 score list
         """
         super().__init__(xgb_models, mse_results)
+        self.mae_results = mae_results
         self.r2_results = r2_results
 
 
@@ -84,12 +87,13 @@ class CVResultRegressionBow(CVResultRegression):
     """
     Represents the result object of a cross validation for a regression model using bag of words columns
     """
-    def __init__(self, xgb_models, mse_results, r2_results, train_val_columns):
+    def __init__(self, xgb_models, mse_results, mae_results, r2_results, train_val_columns):
         """
         :param xgb_models: xg boost model list
         :param mse_results: mean squared error result list
+        :param mae_results: mean absolute error result list
         :param r2_results: r2 score list
         :param train_val_columns: columns of dataframe that was used for modeling including bag of words columns
         """
-        super().__init__(xgb_models, mse_results, r2_results)
+        super().__init__(xgb_models, mse_results, mae_results, r2_results)
         self.train_val_columns = train_val_columns

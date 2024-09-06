@@ -1,7 +1,7 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 
-from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, adapt_test_to_training_data
+from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, adapt_test_to_training_data, \
+    encode_labels
 
 
 class MentalHealthPreprocessing(Preprocessing):
@@ -30,10 +30,8 @@ class MentalHealthPreprocessing(Preprocessing):
                                                                 columns=self.df.columns.to_list(),
                                                                 postfix="statement")
         preprocessed_df = pd.concat([self.df, bag_of_words_prepared], axis=1)
-        y = preprocessed_df[self.target_col]
         # encode mental health status
-        label_encoder = LabelEncoder()
-        y = label_encoder.fit_transform(y)
+        y = encode_labels(series=preprocessed_df[self.target_col])
         x = preprocessed_df.drop(self.columns_to_drop, axis=1)
         # prepare bag of words matrix for test set
         if self.train_val_columns:
