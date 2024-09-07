@@ -8,6 +8,7 @@ def print_cv_classification_result(cv_result, best_model_index):
     print("Mean squared error of best model: " + str(cv_result.mse_results[best_model_index]))
     print("Accuracy of best model: " + str(cv_result.acc_results[best_model_index]))
     print("Classification report of best model:\n" + str(cv_result.reports[best_model_index]))
+    print()
 
 
 def print_cv_regression_result(cv_result, best_model_index):
@@ -19,6 +20,7 @@ def print_cv_regression_result(cv_result, best_model_index):
     print("Mean squared error of best model: " + str(cv_result.mse_results[best_model_index]))
     print("Mean absolute error of best model: " + str(cv_result.mae_results[best_model_index]))
     print("R2 score of best model: " + str(cv_result.r2_results[best_model_index]))
+    print()
 
 
 class CVResult:

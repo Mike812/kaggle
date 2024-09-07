@@ -11,6 +11,8 @@ class MentalHealthPreprocessing(Preprocessing):
     def __init__(self, df, target_col, col_sum_threshold=150, train_val_columns=None):
         """
         :param df: input dataframe with mental health data
+        :param target_col: column to predict
+        :param col_sum_threshold: filter threshold wrt. column sum
         :param train_val_columns: columns of dataframe that was used for modeling including bag of words columns
         """
         super().__init__(df=df, target_col=target_col)

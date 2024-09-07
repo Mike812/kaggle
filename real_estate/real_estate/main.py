@@ -28,7 +28,7 @@ def main():
     test_size = 0.3
 
     train_val_data, test_data = train_test_split(real_estate_data, test_size=test_size, random_state=42)
-    cv_result = ModelEvaluation(train_val_data=train_val_data.reset_index(),
+    cv_result = ModelEvaluation(train_val_data=train_val_data.reset_index(drop=True),
                                 preprocessor=RealEstatePreprocessing,
                                 target_col=target_col,
                                 model=model,

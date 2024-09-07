@@ -1,11 +1,7 @@
-from sklearn.impute import SimpleImputer
 from sklearn.metrics import mean_squared_error, mean_absolute_error, accuracy_score, classification_report, r2_score
 from sklearn.model_selection import KFold
 from scipy.sparse import csr_matrix
 import time
-
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 
 from utils.cross_validation_result import CVResultClassificationBoW, CVResultClassification, CVResultRegressionBow
 
@@ -126,7 +122,7 @@ class ModelEvaluation:
         mae_results = []
         r2_results = []
         x_train_val, y_train_val = self.preprocessor(df=self.train_val_data, target_col=self.target_col).start()
-        train_val_columns = x_train_val.columns.tolist()
+        train_val_columns = x_train_val.columns.to_list()
         print(f'Train data: {x_train_val.shape}')
         print(f'Validation data: {y_train_val.shape}')
         # Start cross validation
