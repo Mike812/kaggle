@@ -80,9 +80,9 @@ class AlternateDimPreprocessing(Preprocessing):
         self.df = self.apply_log_normalization()
 
         if self.test:
-            x_train = self.df.drop(self.columns_to_drop_test, axis=1)
-            return x_train
+            x = self.df.drop(self.columns_to_drop_test, axis=1)
+            return x
         else:
-            y_train = self.df["Transported"]
-            x_train = self.df.drop(self.columns_to_drop_train, axis=1)
-            return x_train, y_train
+            y = self.df[self.target_col]
+            x = self.df.drop(self.columns_to_drop_train, axis=1)
+            return x, y
