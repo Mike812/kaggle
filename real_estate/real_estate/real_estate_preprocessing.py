@@ -82,7 +82,7 @@ class RealEstatePreprocessing(Preprocessing):
         see https://www.kaggle.com/code/bhavikrohit/uae-real-estate-market-analysis-2024
         :return:
         """
-        self.df['price_per_sqft'] = self.df['price'] / (self.df['sizeMin'] + 0.1)
+        self.df['price_per_sqft'] = self.df['price'] / (self.df['sizeMin'])
 
     def start(self):
         """
