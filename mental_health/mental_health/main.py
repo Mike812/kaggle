@@ -6,8 +6,8 @@ import pickle
 import os
 import numpy
 
-from utils.model_evaluation import ModelEvaluation, print_classification_results
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
+from utils.model_evaluation import ModelEvaluation, print_classification_results
 from utils.cross_validation_result import print_cv_classification_result
 from utils.io_utils import write_to_csv
 
@@ -21,18 +21,18 @@ for dir_name, _, file_names in os.walk(data_path):
 def main():
     # Read data from kaggle as dataframe and define variables
     combined_data = pd.read_csv(data_path + "combined_data.csv", index_col=0)
-    target_col = "status"
     model = XGBClassifier(n_estimators=500, learning_rate=0.1, early_stopping_rounds=5)
+    target_col = "status"
     cv_splits = 3
     test_size = 0.3
 
     train_val_data, test_data = train_test_split(combined_data, test_size=test_size, random_state=42)
     cv_result = ModelEvaluation(train_val_data=train_val_data.reset_index(drop=True),
                                 preprocessor=MentalHealthPreprocessing,
-                                target_col=target_col,
                                 model=model,
                                 splits=cv_splits,
-                                bow=True).cross_validate_classification()
+                                bow=True,
+                                target_col=target_col).cross_validate_classification()
 
     print("\nFinal model:")
     # Pick best model from cross validation
@@ -43,7 +43,7 @@ def main():
     print_cv_classification_result(cv_result=cv_result, best_model_index=best_model_index)
 
     # Start preprocessing of test data
-    x_test, y_test = MentalHealthPreprocessing(df=test_data.reset_index(drop=True), target_col=target_col,
+    x_test, y_test = MentalHealthPreprocessing(df=test_data.reset_index(drop=True),
                                                train_val_columns=train_val_columns,
                                                col_sum_threshold=50).start()
 

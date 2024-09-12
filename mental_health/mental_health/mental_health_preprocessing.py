@@ -1,14 +1,14 @@
 import pandas as pd
 
-from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, adapt_test_to_training_data, \
-    encode_labels
+from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, encode_labels, \
+    adapt_test_to_training_data
 
 
 class MentalHealthPreprocessing(Preprocessing):
     """
     Represents all methods and variables that are needed for the preprocessing of the mental health input dataframes.
     """
-    def __init__(self, df, target_col, col_sum_threshold=150, train_val_columns=None):
+    def __init__(self, df, target_col="status", col_sum_threshold=150, train_val_columns=None):
         """
         :param df: input dataframe with mental health data
         :param target_col: column to predict

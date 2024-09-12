@@ -1,7 +1,0 @@
-pandas~=2.2.2
-pytest~=8.3.2
-alternate_dimension~=1.0
-numpy~=2.0.0
-scikit-learn~=1.5.1
-xgboost~=1.7.6
-setuptools~=71.0.1

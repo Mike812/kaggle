@@ -1,15 +1,8 @@
-import os
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
 
-# print file names in data path
-data_path = "../../data/"
-for dir_name, _, file_names in os.walk(data_path):
-    for filename in file_names:
-        print(os.path.join(dir_name, filename))
 
 df_train = pd.DataFrame({"statement": ["I think that I am bipolar or suffer from another mental disease",
                                        "I think I feel normal."],
@@ -21,7 +14,7 @@ df_test = pd.DataFrame({"statement": ["I am bipolar or suffer from another menta
 df_expected_bow_train = pd.DataFrame({"another": [1, 0], "bipolar": [1, 0], "disease": [1, 0], "feel": [0, 1],
                                       "mental": [1, 0], "normal": [0, 1], "suffer": [1, 0], "think": [1, 1]})
 
-df_combined = pd.read_csv(data_path + "combined_data.csv")
+df_combined = pd.read_csv("/Users/michaelkrug/git/kaggle/mental_health/data/combined_data.csv")
 target_col = "status"
 
 

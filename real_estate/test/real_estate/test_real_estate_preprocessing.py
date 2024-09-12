@@ -4,37 +4,32 @@ import pandas as pd
 
 from real_estate.real_estate.real_estate_preprocessing import RealEstatePreprocessing
 
-# print file names in data path
-data_path = "../../data/"
-for dir_name, _, file_names in os.walk(data_path):
-    for filename in file_names:
-        print(os.path.join(dir_name, filename))
 
 df = pd.DataFrame({
-    "title": ["Great ROI I High Floor"],
-    "displayAddress": ["Binghatti Canal, Business Bay, Dubai"],
-    "bathrooms": ["2"],
-    "bedrooms": ["4"],
-    "addedOn": ["2024-08-14T12:02:53Z"],
-    "type": ["Residential for Sale"],
-    "price": [2500000],
-    "verified": [True],
-    "priceDuration": ["sell"],
-    "sizeMin": ["1000 sqft"],
-    "furnishing": ["NO"],
-    "description": ["MNA Properties is delighted"]})
+    "title": ["Great ROI I High Floor", "Nice balcony"],
+    "displayAddress": ["Binghatti Canal, Business Bay, Dubai", "Dubai"],
+    "bathrooms": ["2", "1"],
+    "bedrooms": ["4", "2"],
+    "addedOn": ["2024-08-14T12:02:53Z", "2024-09-14T12:02:53Z"],
+    "type": ["Residential for Sale", "Residential for Sale"],
+    "price": [2500000, 1000000],
+    "verified": [True, False],
+    "priceDuration": ["sell", "sell"],
+    "sizeMin": ["1000 sqft", "1000 sqft"],
+    "furnishing": ["NO", "YES"],
+    "description": ["MNA Properties is delighted", "MNA Properties"]})
 
 x_expected = pd.DataFrame({
-    "bathroom_per_bedrooms": [2.0],
-    "bathrooms": [2],
-    "bedrooms": [4],
-    "furnishing": [0],
-    "price_per_sqft": [2500.0],
-    "sizeMin": [1000],
-    "verified": [True],
+    "bathroom_per_bedrooms": [2.0, 2.0],
+    "bathrooms": [2, 1],
+    "bedrooms": [4, 2],
+    "furnishing": [0, 1],
+    "price_per_sqft": [2500.0, 1000.0],
+    "sizeMin": [1000, 1000],
+    "verified": [True, False],
 })
 
-real_estate_data = pd.read_csv(data_path + "uae_real_estate_2024.csv")
+real_estate_data = pd.read_csv("/Users/michaelkrug/git/kaggle/real_estate/data/uae_real_estate_2024.csv")
 target_col = "price"
 
 
@@ -49,7 +44,7 @@ class TestRealEstatePreprocessing:
         pd.set_option('display.max_columns', None)
 
         assert x.equals(x_expected)
-        assert y.equals(pd.Series(2500000))
+        assert y.equals(pd.Series([2500000, 1000000]))
 
         real_estate_preprocessing = RealEstatePreprocessing(
             df=real_estate_data, target_col=target_col
