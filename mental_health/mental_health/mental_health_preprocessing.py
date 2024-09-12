@@ -1,6 +1,7 @@
 import pandas as pd
 
-from utils.preprocessing import Preprocessing
+from utils.preprocessing import Preprocessing, create_and_prepare_bag_of_words, encode_labels, \
+    adapt_test_to_training_data
 
 
 class MentalHealthPreprocessing(Preprocessing):

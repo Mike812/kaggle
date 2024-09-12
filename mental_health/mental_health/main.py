@@ -22,6 +22,7 @@ def main():
     # Read data from kaggle as dataframe and define variables
     combined_data = pd.read_csv(data_path + "combined_data.csv", index_col=0)
     model = XGBClassifier(n_estimators=500, learning_rate=0.1, early_stopping_rounds=5)
+    target_col = "status"
     cv_splits = 3
     test_size = 0.3
 
@@ -30,7 +31,8 @@ def main():
                                 preprocessor=MentalHealthPreprocessing,
                                 model=model,
                                 splits=cv_splits,
-                                bow=True).cross_validate_classification()
+                                bow=True,
+                                target_col=target_col).cross_validate_classification()
 
     print("\nFinal model:")
     # Pick best model from cross validation
