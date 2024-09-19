@@ -19,6 +19,9 @@ class UserStatement(SQLModel, table=True):
     statement: str = Field(default=None, primary_key=True)
 
 
+# try locally without docker
+# database_url = "postgresql://localhost/mental_health"
+# engine = create_engine(database_url)
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 
 
@@ -28,8 +31,8 @@ def create_db_and_tables():
 
 fast_api_app = FastAPI()
 # load trained xgboost model
-xgb_model: XGBClassifier = pickle.load(open("xgb_mental_health.pkl", "rb"))
-train_val_columns = pd.read_csv("train_val_columns.csv")
+xgb_model: XGBClassifier = pickle.load(open("fast_api_app/xgb_mental_health.pkl", "rb"))
+train_val_columns = pd.read_csv("fast_api_app/train_val_columns.csv")
 
 
 @fast_api_app.on_event("startup")
