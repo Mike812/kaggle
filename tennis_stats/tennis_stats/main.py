@@ -25,11 +25,8 @@ def query_players_tournament_detailed(tennis_player, tournament, year):
 
 def main():
     parser = argparse.ArgumentParser(description="This is a command line interface for tennis stats")
-
     parser.add_argument("--tennis_player", help="Name of the tennis player")
-
     parser.add_argument("--tournament", help="Name of the tournament")
-
     parser.add_argument("--year", help="Year the tournament took place")
 
     args = parser.parse_args()
@@ -37,8 +34,8 @@ def main():
     tournament = args.tournament
     year = args.year
 
-    print("These are the tennis stats of " + args.tennis_player + " at the "
-          + args.tournament + " in " + args.year + ": ")
+    print("These are the tennis stats of " + tennis_player + " at the "
+          + tournament + " in " + year + ": ")
 
     df_result = query_players_tournament_detailed(tennis_player=tennis_player, tournament=tournament, year=year)
 
