@@ -5,7 +5,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select
 from xgboost import XGBClassifier
 import pandas as pd
 
-from config import settings
+from fast_api_app.config import settings
 from mental_health.mental_health.mental_health_preprocessing import MentalHealthPreprocessing
 
 

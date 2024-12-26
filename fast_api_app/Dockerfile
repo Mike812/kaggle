@@ -24,6 +24,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     --mount=type=bind,source=xgb_mental_health.pkl,target=xgb_mental_health.pkl \
     --mount=type=bind,source=train_val_columns.csv,target=train_val_columns.csv \
+    --mount=type=bind,source=shell.sh,target=shell.sh \
     python -m pip install -r requirements.txt
 
 COPY kaggle.tar.gz .
@@ -36,12 +37,12 @@ WORKDIR .
 
 ENV PYTHONPATH=.
 
-RUN cd fast_api_app
-
 # Expose the port that the application listens on.
 EXPOSE 8000
 
 USER appuser
 
 # Run the application.
-CMD python3 -m uvicorn fast_api_app:fast_api_app --host=0.0.0.0 --port=8001
+# RUN cd fast_api_app
+# CMD python3 -m uvicorn fast_api_app:fast_api_app --host=0.0.0.0 --port=8001
+CMD python3 -m uvicorn fast_api_app.fast_api_app:fast_api_app --host=0.0.0.0 --port=8001
