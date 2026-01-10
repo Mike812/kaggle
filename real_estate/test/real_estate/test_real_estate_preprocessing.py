@@ -1,9 +1,7 @@
-import os
-
 import pandas as pd
 
 from real_estate.real_estate.real_estate_preprocessing import RealEstatePreprocessing
-
+from utils.io_utils import kaggle_folder
 
 df = pd.DataFrame({
     "title": ["Great ROI I High Floor", "Nice balcony"],
@@ -29,9 +27,8 @@ x_expected = pd.DataFrame({
     "verified": [True, False],
 })
 
-real_estate_data = pd.read_csv("/Users/michaelkrug/git/kaggle/real_estate/data/uae_real_estate_2024.csv")
+real_estate_data = pd.read_csv(kaggle_folder+"real_estate\\data\\uae_real_estate_2024.csv")
 target_col = "price"
-
 
 class TestRealEstatePreprocessing:
 

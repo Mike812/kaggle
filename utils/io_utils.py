@@ -1,5 +1,7 @@
 import csv
 
+kaggle_folder = "C:\\Users\\micha\\git\\kaggle\\"
+
 
 def write_to_csv(file, data):
     with open(file, 'w', newline='') as myfile:
